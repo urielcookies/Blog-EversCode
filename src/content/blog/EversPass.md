@@ -1,0 +1,64 @@
+---
+title: 'The Idea Behind EversPass'
+description: 'How a gender reveal party and a Sony camera sparked the idea for a photo sharing app I actually wanted to use.'
+pubDate: 'Mar 04 2026'
+heroImage: '../../../public/everspass/hero.png'
+---
+
+It started at my cousin's gender reveal party.
+
+I had my Sony ZV-E1 with me, shooting with filters applied in-camera so the photos were basically ready to share straight out of the lens. No editing needed, no sitting on a laptop for an hour in post. I was snapping, reviewing, and sharing photos with family *minutes* after taking them — and it felt really good. People were gathered around, laughing at candids, asking to see shots. It was exactly what a family moment should be.
+
+But then came the question I wasn't prepared for: *"Can you share those with everyone?"*
+
+And that's when things got awkward.
+
+I didn't have a clean way to do it. I could text them, but compressed previews are garbage and nobody wants 47 individual messages. I could post to a group chat, same problem. I could zip everything and throw it on Google Drive, but then half the family would need a Google account, and someone's always going to text me two days later asking why they can't open the zip on their phone. I could use AirDrop, but we weren't all on iPhones. The tools I had were either too lossy, too complicated, or just not built for *this* — a spontaneous, in-the-moment, everyone-just-grab-the-photos situation.
+
+That's where the idea clicked for me. What if I could just upload photos to a page, generate a QR code, and let people scan it and grab what they want? No accounts. No downloads. No compression. Just scan and take.
+
+That's EversPass.
+
+---
+
+## What It Actually Is
+
+EversPass lets you create a **session** — think of it like a temporary photo album that lives for 24 hours and then disappears. You upload your photos, hit share, and a QR code gets generated on the spot. Anyone who scans it can browse the gallery and download photos in full original quality. Then the session auto-deletes. Nothing lingers.
+
+<img src="/everspass/sessions.png" alt="EversPass sessions dashboard" style="max-width: 320px; display: block; margin: 0 auto;" />
+
+The 24-hour window is intentional. It keeps things clean. You're not building a permanent archive — you're passing photos to people *right now*, in the moment. After that, it's gone and there's nothing to manage or remember to delete later.
+
+---
+
+## The Part I'm Most Excited About
+
+One thing I really wanted to get right was the sharing permissions model. When you share a session, you're not just flipping a public/private switch — you can grant access as a **Viewer**, **Editor**, or **Owner**.
+
+Viewers can browse and download. Editors can also upload. Owners get full control.
+
+<img src="/everspass/share-qr.png" alt="EversPass share modal with QR code and permission levels" style="max-width: 320px; display: block; margin: 0 auto;" />
+
+This matters more than it sounds. Say you're at a wedding and four different people were taking photos from different angles. Instead of one person being the bottleneck who has to collect everyone's shots and redistribute them, you just invite the other photographers as Editors and now everyone is contributing to the same session. Guests scan one QR code and get everything — a true team effort.
+
+That collaborative angle felt missing from every other solution I'd seen. Most photo-sharing apps are built around one person sharing *to* many people. EversPass is built around many people sharing *with* each other.
+
+<img src="/everspass/gallery.png" alt="EversPass photo gallery view" style="max-width: 320px; display: block; margin: 0 auto;" />
+
+---
+
+## Who It's For
+
+Not professional photographers. If you're shooting RAW and delivering a fully edited gallery a week later, EversPass isn't your tool — that's a different workflow entirely and there are already good solutions for it.
+
+This is for regular people who like to take photos. The person at the family reunion with the nice camera. The friend who always ends up being the unofficial photographer at birthday parties. Anyone who's ever been in the position of "I have all the good photos but I have no good way to share them right now."
+
+That was me at that gender reveal. And honestly, it's been me at a lot of events.
+
+---
+
+## Where It Stands
+
+EversPass is live at [everspass.com](https://everspass.com). It's early, it's lean, and it does exactly what I needed it to do. Sessions, uploads, QR codes, permissions, auto-delete. Built it because I wanted it to exist — and that's still the best reason I know to build something.
+
+More posts coming as the app evolves. There's a lot I want to add, and I'd rather build it in the open than wait until it's "finished."

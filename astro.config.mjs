@@ -11,5 +11,10 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      hmr: {
+        overlay: false // Prevents browser activation on file saves
+      }
+    }
   },
 });
