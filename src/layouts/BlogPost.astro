@@ -10,11 +10,43 @@ import '../styles/global.css';
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+
+const AUTHOR = 'Ever Garcia';
+const SITE_URL = 'https://blog.everscode.com';
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: title,
+	description,
+	datePublished: pubDate.toISOString(),
+	dateModified: (updatedDate ?? pubDate).toISOString(),
+	author: {
+		'@type': 'Person',
+		name: AUTHOR,
+		url: SITE_URL,
+	},
+	publisher: {
+		'@type': 'Person',
+		name: AUTHOR,
+		url: SITE_URL,
+	},
+	url: new URL(Astro.url.pathname, SITE_URL).href,
+	...(heroImage ? { image: new URL(heroImage.src, SITE_URL).href } : {}),
+};
 ---
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead
+			title={title}
+			description={description}
+			type="article"
+			pubDate={pubDate}
+			updatedDate={updatedDate}
+			author={AUTHOR}
+			jsonLd={jsonLd}
+		/>
 		<style>
 			main {
 				width: calc(100% - 2em);

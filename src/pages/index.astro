@@ -9,12 +9,34 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebSite',
+			name: SITE_TITLE,
+			url: 'https://blog.everscode.com',
+			description: SITE_DESCRIPTION,
+		},
+		{
+			'@type': 'Person',
+			name: 'Ever Garcia',
+			url: 'https://blog.everscode.com',
+			jobTitle: 'Full Stack Developer',
+			sameAs: [
+				'https://github.com/urielcookies',
+				'https://linkedin.com/in/uriel621',
+			],
+		},
+	],
+};
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} jsonLd={jsonLd} />
 	</head>
 	<body>
 		<Header />
