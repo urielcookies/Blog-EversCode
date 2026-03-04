@@ -2,10 +2,14 @@
 title: 'The Idea Behind EversPass'
 description: 'How a gender reveal party and a Sony camera sparked the idea for a photo sharing app I actually wanted to use.'
 pubDate: 'Mar 04 2026'
-heroImage: '../../../public/everspass/hero.png'
+heroImage: '../../assets/everspass/hero.png'
 ---
 
-It started at my cousin's gender reveal party.
+import sessionsImg from '../../assets/everspass/sessions.png';
+import shareQrImg from '../../assets/everspass/share-qr.png';
+import galleryImg from '../../assets/everspass/gallery.png';
+
+It started at my cousin's gender reveal party June 1, 2025 afternoon/evening.
 
 I had my Sony ZV-E1 with me, shooting with filters applied in-camera so the photos were basically ready to share straight out of the lens. No editing needed, no sitting on a laptop for an hour in post. I was snapping, reviewing, and sharing photos with family *minutes* after taking them — and it felt really good. People were gathered around, laughing at candids, asking to see shots. It was exactly what a family moment should be.
 
@@ -25,7 +29,7 @@ That's EversPass.
 
 EversPass lets you create a **session** — think of it like a temporary photo album that lives for 24 hours and then disappears. You upload your photos, hit share, and a QR code gets generated on the spot. Anyone who scans it can browse the gallery and download photos in full original quality. Then the session auto-deletes. Nothing lingers.
 
-<img src="/everspass/sessions.png" alt="EversPass sessions dashboard" style="max-width: 320px; display: block; margin: 0 auto;" />
+<img src={sessionsImg.src} alt="EversPass sessions dashboard" style="max-width: 320px; display: block; margin: 0 auto;" />
 
 The 24-hour window is intentional. It keeps things clean. You're not building a permanent archive — you're passing photos to people *right now*, in the moment. After that, it's gone and there's nothing to manage or remember to delete later.
 
@@ -37,13 +41,13 @@ One thing I really wanted to get right was the sharing permissions model. When y
 
 Viewers can browse and download. Editors can also upload. Owners get full control.
 
-<img src="/everspass/share-qr.png" alt="EversPass share modal with QR code and permission levels" style="max-width: 320px; display: block; margin: 0 auto;" />
+<img src={shareQrImg.src} alt="EversPass share modal with QR code and permission levels" style="max-width: 320px; display: block; margin: 0 auto;" />
 
 This matters more than it sounds. Say you're at a wedding and four different people were taking photos from different angles. Instead of one person being the bottleneck who has to collect everyone's shots and redistribute them, you just invite the other photographers as Editors and now everyone is contributing to the same session. Guests scan one QR code and get everything — a true team effort.
 
 That collaborative angle felt missing from every other solution I'd seen. Most photo-sharing apps are built around one person sharing *to* many people. EversPass is built around many people sharing *with* each other.
 
-<img src="/everspass/gallery.png" alt="EversPass photo gallery view" style="max-width: 320px; display: block; margin: 0 auto;" />
+<img src={galleryImg.src} alt="EversPass photo gallery view" style="max-width: 320px; display: block; margin: 0 auto;" />
 
 ---
 
