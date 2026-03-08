@@ -1,0 +1,70 @@
+---
+title: 'EverSlidePath: A Digital Pathology Viewer'
+description: 'Why I built a free, browser-native whole-slide imaging platform with AI detection and an educational workflow, and who it is actually for.'
+pubDate: 'Mar 08 2026'
+heroImage: '../../assets/eversslidepath/hero.png'
+---
+
+I didn't go to med school. But I spent enough time working on healthcare software to get an idea of how it works.
+
+Pathology is one of the most visual disciplines in medicine. Everything is pattern recognition. You're staring at tissue under a microscope, learning to distinguish a tumor cell from a normal one, a vessel from a duct, inflammation from artifact. The only way to get good at it is repetition. Thousands of slides. Hours at the scope.
+
+The problem is access. Most digital pathology software is locked behind institutional licenses that cost tens of thousands of dollars a year. The free alternatives are either static image galleries with no zoom, no annotation, no interactivity, or research tools so complex they require a dedicated IT setup to run. Medical students rotating through pathology get a few weeks with glass slides and a shared microscope, and then it's over.
+
+That gap felt solvable. A modern browser can render tiled whole-slide images, run machine learning models, and sync data to a database, all without installing anything. So I built EverSlidePath to see if I could close it.
+
+## What It Is
+
+EverSlidePath is a browser-based whole-slide image (WSI) viewer with three things layered on top: an AI detection model, a structured annotation system, and an educational workflow for instructors and students.
+
+The viewer itself is built on OpenSeadragon, the same tile-rendering engine used by major digital pathology platforms. You load a slide, pan around, zoom into individual cells, and the image stays sharp at every level of magnification. It feels like a real microscope, not a JPEG viewer.
+
+The AI piece runs entirely in your browser. No server, no GPU, no upload. A TensorFlow.js port of the StarDist model handles nuclear instance segmentation. It identifies individual cell nuclei in the current viewport and marks them as annotations. You adjust a probability threshold, hit run, and within seconds the tissue is mapped. It's not a diagnostic tool, but as a learning aid for understanding what a dense tumor stroma looks like versus scattered immune infiltrate, it's genuinely useful.
+
+Annotations are saved to Cloudflare D1, so they persist across sessions and sync automatically as you work.
+
+---
+
+## The Part I Built Last and Like the Most
+
+The viewer and the AI were straightforward to build. The educational workflow took longer to get right, and it ended up being the most interesting part.
+
+The idea is simple: an instructor creates a **case**. They pick a slide, write a description, and optionally mark up ground truth annotations. They organize cases into a **course** and share an access code. Students go to `/join`, enter the code, and their dashboard shows their assigned cases with progress tracking.
+
+A student opens a case, annotates what they see, labeling regions as tumor, stroma, vessel, immune, necrosis, and when they're confident, they submit. The moment they submit, two things happen: the annotation panel locks (no more edits), and if the instructor added a ground truth overlay, it becomes visible. The student can now directly compare what they marked against the reference answer.
+
+That reveal moment is what makes it feel like actual learning rather than just drawing on images. You commit to an answer, then see where you were right and where you weren't.
+
+Instructors get a dashboard that shows every student's progress: how many cases they've opened, how many they've submitted, and a per-student annotation count. Nothing fancy, but enough to know who's engaging and who's falling behind.
+
+---
+
+## Who It's For
+
+**Medical students** who want exposure to real tissue patterns before their pathology rotation. The cases are structured, the AI gives a second opinion, and you can work through them on your own schedule in any browser.
+
+**Pathology residents** who want a low-friction way to practice systematic slide review. The annotation labels map to real diagnostic categories. This isn't toy data.
+
+**Educators** who want to assign structured cases to a cohort without buying institutional software. Create a course, share a code, track submissions. That's the whole setup.
+
+It is not for professional pathologists doing clinical review. There is no HIPAA compliance, no LIS integration, no regulatory certification. This is an educational tool, not a diagnostic one. That distinction matters and I want to be clear about it.
+
+---
+
+## Honest Limitations
+
+The slide library is small. Right now there are three built-in demo slides (breast, lung, colon) plus a public library of whole-slide images hosted by external sources. There's no built-in upload pipeline for proprietary slides, but you can link to any publicly accessible DZI or IIIF tile source if you're responsible for hosting the image.
+
+The AI model is a general-purpose nuclear detector. It's good at finding nuclei; it doesn't classify cell types, it doesn't grade tumors, and it doesn't replace a trained eye. Think of it as a counting and localization tool rather than a diagnostic assistant.
+
+The educational workflow is functional but early. The instructor dashboard shows progress but not annotation quality. There's no feedback loop yet. No way for an instructor to leave comments on a student's submission, no scoring, no rubric. Those are obvious next steps that aren't built yet.
+
+---
+
+## Where It Stands
+
+EverSlidePath is live at [pathshare.urielcookies.workers.dev](https://pathshare.urielcookies.workers.dev). No account needed to open the viewer and start annotating. If you want the educational workflow (cases, courses, student tracking), there's a login flow and it takes about two minutes to set up.
+
+It's early. The slide library is thin, the AI model is general-purpose, and there's more to build on the instructor side. But the core of what I wanted to exist, a free, browser-native pathology viewer that any student can open on any device and actually learn from, that part works.
+
+I built it because the gap was real. There's still a lot left to do.
