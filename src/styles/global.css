@@ -1,155 +1,547 @@
-/*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
+@import "tailwindcss";
+
+/* ============================================================
+   TAILWIND V4 THEME — Static Design Tokens
+   EversCode Blog · Modern Gradient · Dark-First
+   ============================================================ */
+
+@theme {
+  /* --- Font Families --- */
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  /* --- Color: Brand (static — same in both themes) --- */
+  --color-brand-purple:       #a855f7;
+  --color-brand-purple-light: #c084fc;
+  --color-brand-purple-dark:  #7c3aed;
+  --color-brand-blue:         #3b82f6;
+  --color-brand-blue-light:   #60a5fa;
+  --color-brand-blue-dark:    #2563eb;
+
+  /* --- Color: Semantic (static) --- */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error:   #ef4444;
+  --color-info:    #3b82f6;
+
+  /* --- Border Radius --- */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm:          0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md:          0 4px 12px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg:          0 8px 32px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-glow:        0 0 24px rgba(168, 85, 247, 0.18), 0 0 48px rgba(59, 130, 246, 0.12);
+  --shadow-glow-strong: 0 0 32px rgba(168, 85, 247, 0.35), 0 0 64px rgba(59, 130, 246, 0.22);
+
+  /* --- Typography Scale (Minor Third · 1.25 ratio · 18px base) --- */
+  --text-xs:   0.694rem;
+  --text-sm:   0.833rem;
+  --text-base: 1rem;
+  --text-lg:   1.2rem;
+  --text-xl:   1.44rem;
+  --text-2xl:  1.728rem;
+  --text-3xl:  2.074rem;
+  --text-4xl:  2.488rem;
+  --text-5xl:  2.986rem;
+}
+
+/* ============================================================
+   SEMANTIC RUNTIME VARIABLES — Dark Mode (default)
+   These are what all base styles reference. Swapped by
+   [data-theme="light"] for the light theme.
+   ============================================================ */
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px
-		rgba(var(--gray), 33%);
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-regular.woff") format("woff");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-bold.woff") format("woff");
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-body {
-	font-family: "Atkinson", sans-serif;
-	margin: 0;
-	padding: 0;
-	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
-	background-size: 100% 600px;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 20px;
-	line-height: 1.7;
-}
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
-}
-h1 {
-	font-size: 3.052em;
-}
-h2 {
-	font-size: 2.441em;
-}
-h3 {
-	font-size: 1.953em;
-}
-h4 {
-	font-size: 1.563em;
-}
-h5 {
-	font-size: 1.25em;
-}
-strong,
-b {
-	font-weight: 700;
-}
-a {
-	color: var(--accent);
-}
-a:hover {
-	color: var(--accent);
-}
-p {
-	margin-bottom: 1em;
-}
-.prose p {
-	margin-bottom: 2em;
-}
-textarea {
-	width: 100%;
-	font-size: 16px;
-}
-input {
-	font-size: 16px;
-}
-table {
-	width: 100%;
-}
-img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
-}
-code {
-	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
-}
-pre {
-	padding: 1.5em;
-	border-radius: 8px;
-}
-pre > code {
-	all: unset;
-}
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
-}
-hr {
-	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
-}
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
-	}
-	main {
-		padding: 1em;
-	}
+  /* Backgrounds */
+  --c-bg:          #09090b;
+  --c-bg-surface:  #111113;
+  --c-bg-elevated: #18181b;
+  --c-bg-overlay:  #27272a;
+
+  /* Text */
+  --c-heading:  #f4f4f5;
+  --c-text:     #e4e4e7;
+  --c-text-2:   #a1a1aa;
+  --c-text-3:   #71717a;
+  --c-text-4:   #52525b;
+
+  /* Borders */
+  --c-border-subtle: #18181b;
+  --c-border:        #27272a;
+  --c-border-strong: #3f3f46;
+
+  /* Code */
+  --c-code-bg:   #0d0d0f;
+  --c-code-text: #c084fc;
+
+  /* Interactive */
+  --c-link:       #c084fc;
+  --c-link-hover: #a855f7;
+
+  /* Heading gradient — dark mode */
+  --gradient-heading: linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%);
+
+  /* Gradient tokens (same in both themes) */
+  --gradient-brand:      linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+  --gradient-brand-soft: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%);
+  --gradient-brand-glow: linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(59, 130, 246, 0.4) 100%);
+  --gradient-hero:       linear-gradient(180deg, transparent 40%, #09090b 100%);
+  --gradient-hr:         linear-gradient(90deg, transparent, #3f3f46 30%, #3f3f46 70%, transparent);
+
+  /* Glass */
+  --glass-bg:     rgba(17, 17, 19, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-blur:   blur(20px) saturate(180%);
+
+  /* Animation */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  /* State */
+  --state-focus-ring: 0 0 0 2px var(--c-bg), 0 0 0 4px #a855f7;
+
+  /* Layout */
+  --container-content:   720px;
+  --container-wide:      960px;
+  --container-dashboard: 1280px;
 }
 
+/* ============================================================
+   SEMANTIC RUNTIME VARIABLES — Light Mode Override
+   ============================================================ */
+
+[data-theme="light"] {
+  /* Backgrounds */
+  --c-bg:          #ffffff;
+  --c-bg-surface:  #fafafa;
+  --c-bg-elevated: #f4f4f5;
+  --c-bg-overlay:  #e4e4e7;
+
+  /* Text */
+  --c-heading:  #09090b;
+  --c-text:     #09090b;
+  --c-text-2:   #18181b;
+  --c-text-3:   #3f3f46;
+  --c-text-4:   #71717a;
+
+  /* Borders */
+  --c-border-subtle: #f4f4f5;
+  --c-border:        #e4e4e7;
+  --c-border-strong: #d4d4d8;
+
+  /* Code */
+  --c-code-bg:   #f4f4f5;
+  --c-code-text: #7c3aed;
+
+  /* Heading gradient — light mode */
+  --gradient-heading: linear-gradient(135deg, #09090b 0%, #3f3f46 100%);
+
+  /* Interactive */
+  --c-link:       #7c3aed;
+  --c-link-hover: #6d28d9;
+
+  /* Gradient hero fade targets light bg */
+  --gradient-hero: linear-gradient(180deg, transparent 40%, #ffffff 100%);
+  --gradient-hr:   linear-gradient(90deg, transparent, #d4d4d8 30%, #d4d4d8 70%, transparent);
+
+  /* Glass adjusted for light */
+  --glass-bg:     rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-size: 18px;
+  line-height: 1.75;
+  margin: 0;
+  padding: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-x: clip;
+  min-height: 100vh;
+  transition: background-color 250ms ease, color 250ms ease;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+main {
+  width: var(--container-content);
+  max-width: calc(100% - 2rem);
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--c-heading);
+  margin: 0 0 0.5em 0;
+}
+
+h1 { font-size: 2.986rem; letter-spacing: -0.04em; }
+h2 { font-size: 2.074rem; letter-spacing: -0.035em; }
+h3 { font-size: 1.728rem; letter-spacing: -0.025em; }
+h4 { font-size: 1.44rem;  letter-spacing: -0.02em; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; font-weight: 700; }
+
+p {
+  margin-bottom: 1em;
+  color: var(--c-text-2);
+}
+
+strong, b {
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+em {
+  color: var(--c-code-text);
+  font-style: italic;
+}
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+a {
+  color: var(--c-link);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-smooth);
+}
+
+a:hover {
+  color: var(--c-link-hover);
+}
+
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--state-focus-ring);
+  border-radius: 4px;
+}
+
+/* ============================================================
+   CODE & PRE
+   ============================================================ */
+
+code {
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 0.83em;
+  color: var(--c-code-text);
+  background: var(--c-code-bg);
+  border: 1px solid var(--c-border);
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+}
+
+pre {
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  background: var(--c-code-bg);
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  position: relative;
+}
+
+pre::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #a855f7, #3b82f6, transparent);
+  border-radius: 12px 12px 0 0;
+}
+
+pre > code {
+  all: unset;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 0.9rem;
+  color: var(--c-text);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   BLOCKQUOTE
+   ============================================================ */
+
+blockquote {
+  position: relative;
+  border-left: none;
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  background: rgba(168, 85, 247, 0.06);
+  border-radius: 0 12px 12px 0;
+  font-size: 1.1em;
+  font-style: italic;
+  color: var(--c-text-2);
+}
+
+[data-theme="light"] blockquote {
+  background: rgba(168, 85, 247, 0.05);
+}
+
+blockquote::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--gradient-brand);
+  border-radius: 9999px;
+}
+
+/* ============================================================
+   HORIZONTAL RULE
+   ============================================================ */
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--gradient-hr);
+  margin: 2.5rem 0;
+}
+
+/* ============================================================
+   IMAGES
+   ============================================================ */
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th {
+  background: var(--c-bg-elevated);
+  color: var(--c-text);
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--c-border);
+}
+
+td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--c-border-subtle);
+  color: var(--c-text-2);
+}
+
+tr:hover td {
+  background: rgba(128, 128, 128, 0.04);
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+
+input, textarea {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: 1rem;
+  background: var(--c-bg-elevated);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+  border-radius: 8px;
+  padding: 0.5rem 0.875rem;
+  width: 100%;
+  transition:
+    border-color var(--duration-fast) var(--ease-smooth),
+    box-shadow var(--duration-fast) var(--ease-smooth);
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+/* ============================================================
+   PROSE — Long-form reading
+   ============================================================ */
+
+.prose {
+  width: var(--container-content);
+  max-width: calc(100% - 2rem);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.prose p {
+  margin-bottom: 1.75em;
+  color: var(--c-text-2);
+  line-height: 1.8;
+}
+
+.prose h2 {
+  margin-top: 2.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+.prose ul, .prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--c-text-2);
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  line-height: 1.75;
+}
+
+.prose li::marker {
+  color: #a855f7;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+.text-gradient {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.glow        { box-shadow: var(--shadow-glow); }
+.glow-strong { box-shadow: var(--shadow-glow-strong); }
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
 .sr-only {
-	border: 0;
-	padding: 0;
-	margin: 0;
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
-	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
-	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
-	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
-	white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 2px solid #a855f7;
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 720px) {
+  body {
+    font-size: 17px;
+  }
+
+  main {
+    padding: 1.5rem 1rem;
+  }
+
+  h1 { font-size: 2.074rem; }
+  h2 { font-size: 1.728rem; }
+  h3 { font-size: 1.44rem; }
+}
+
+/* ============================================================
+   VIEW TRANSITIONS
+   ============================================================ */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.15s;
+  animation-timing-function: ease;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--c-bg); }
+::-webkit-scrollbar-thumb { background: var(--c-border-strong); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+
+::selection {
+  background: rgba(168, 85, 247, 0.28);
+  color: var(--c-heading);
 }
