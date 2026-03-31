@@ -1,0 +1,80 @@
+---
+interface Props {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  path: string;
+  description?: string;
+}
+
+const { method, path, description } = Astro.props;
+
+const methodColors: Record<string, { bg: string; text: string }> = {
+  GET:    { bg: 'rgba(16, 185, 129, 0.12)', text: '#10b981' },
+  POST:   { bg: 'rgba(168, 85, 247, 0.12)', text: '#a855f7' },
+  PUT:    { bg: 'rgba(245, 158, 11, 0.12)', text: '#f59e0b' },
+  PATCH:  { bg: 'rgba(59, 130, 246, 0.12)', text: '#3b82f6' },
+  DELETE: { bg: 'rgba(239, 68, 68, 0.12)',  text: '#ef4444' },
+};
+
+const color = methodColors[method] ?? methodColors.GET;
+---
+
+<div class="endpoint-card">
+  <div class="endpoint-top">
+    <span
+      class="method-badge"
+      style={`background: ${color.bg}; color: ${color.text};`}
+    >
+      {method}
+    </span>
+    <code class="endpoint-path">{path}</code>
+  </div>
+  {description && <p class="endpoint-desc">{description}</p>}
+</div>
+
+<style>
+  .endpoint-card {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    background: var(--c-bg-elevated);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    transition: border-color 200ms ease;
+  }
+
+  .endpoint-card:hover {
+    border-color: var(--c-border-strong);
+  }
+
+  .endpoint-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .method-badge {
+    font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.2em 0.6em;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .endpoint-path {
+    font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+    font-size: 0.88rem;
+    color: var(--c-text);
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .endpoint-desc {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.875rem;
+    color: var(--c-text-3);
+    line-height: 1.6;
+    padding-left: 0.1rem;
+  }
+</style>

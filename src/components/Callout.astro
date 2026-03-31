@@ -1,0 +1,87 @@
+---
+interface Props {
+  type?: 'note' | 'warning' | 'tip';
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const config = {
+  note: {
+    label: title ?? 'Note',
+    icon: 'ℹ',
+    accent: '#3b82f6',
+    bg: 'rgba(59, 130, 246, 0.07)',
+    border: 'rgba(59, 130, 246, 0.25)',
+  },
+  warning: {
+    label: title ?? 'Warning',
+    icon: '⚠',
+    accent: '#f59e0b',
+    bg: 'rgba(245, 158, 11, 0.07)',
+    border: 'rgba(245, 158, 11, 0.25)',
+  },
+  tip: {
+    label: title ?? 'Tip',
+    icon: '✦',
+    accent: '#a855f7',
+    bg: 'rgba(168, 85, 247, 0.07)',
+    border: 'rgba(168, 85, 247, 0.25)',
+  },
+};
+
+const c = config[type];
+---
+
+<aside
+  class="callout"
+  style={`--callout-accent: ${c.accent}; --callout-bg: ${c.bg}; --callout-border: ${c.border};`}
+>
+  <span class="callout-label">
+    <span class="callout-icon">{c.icon}</span>
+    {c.label}
+  </span>
+  <div class="callout-body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    position: relative;
+    margin: 2rem 0;
+    padding: 1rem 1.25rem 1rem 1.5rem;
+    background: var(--callout-bg);
+    border: 1px solid var(--callout-border);
+    border-left: 3px solid var(--callout-accent);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .callout-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--callout-accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .callout-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  .callout-body :global(p) {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--c-text-2);
+  }
+
+  .callout-body :global(p + p) {
+    margin-top: 0.75em;
+  }
+</style>

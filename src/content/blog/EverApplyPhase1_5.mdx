@@ -1,0 +1,124 @@
+---
+title: 'EverApply Phase 1.5: From Job Matching to Resume Generation'
+description: 'After Phase 1 got the pipeline running, the next question was obvious: once you find a relevant job, what do you actually do with it? Building the ATS resume layer, billing foundations, and fixing the scraper edge cases that only show up in production.'
+pubDate: 'Mar 30 2026'
+heroImage: '../../assets/ever_apply/hero_phase1_5.png'
+---
+
+import Callout from '../../components/Callout.astro';
+import EndpointCard from '../../components/EndpointCard.astro';
+
+Phase 1 ended with a working pipeline. Jobs were being fetched every morning, scored against my brother's resume, and surfaced as matches. The scheduler ran. The database filled up. Everything worked.
+
+Then I watched him use it.
+
+He'd open the match list, see a role that scored an 88, think "that's a real one," and then spend the next twenty minutes manually reworking his resume to match the job description. The pipeline had saved him from scrolling through irrelevant listings. But the actual work of applying was still entirely manual.
+
+So I built the ATS layer. And while I was in there, I also fixed about six things that only broke once real data started flowing through the system.
+
+---
+
+## ATS Resume Generation
+
+The core new feature:
+
+<EndpointCard method="POST" path="/matches/{match_id}/generate-ats-resume" description="Generate and store an ATS-optimized resume PDF for a specific job match." />
+
+When he finds a match worth applying to, one API call takes his resume, passes it to DeepSeek alongside the job description, and gets back a structured JSON blob: rewritten summary, optimized skills list, and new bullet points for every job that mirror the language in the posting. That JSON goes into a PDF builder, and the finished file lands in Cloudflare R2 tied to the match.
+
+<Callout type="note" title="What the model can and can't change">
+The system prompt never lets the model fabricate anything. Companies, job titles, schools, and dates stay exactly as they are on the original resume. It only rewrites *how* things are described. It never invents experience that doesn't exist.
+</Callout>
+
+The PDF builder uses ReportLab. Getting it to reliably produce a one-page document took more iteration than expected. The fix was wrapping the entire story in a `KeepInFrame` with `mode="shrink"`, which scales everything down proportionally if the content runs long rather than letting it spill onto a second page. ATS scanners handle single-page resumes better, and it keeps the output consistent regardless of how verbose the job description was.
+
+Once generated, the ATS resume URL gets stored on the `JobMatch` row. Requesting it again returns the cached version. No second DeepSeek call, no second R2 write, no count against the daily limit. The cache is tied to the match, so each job gets one ATS resume.
+
+---
+
+## Two Sandbox Modes
+
+While building the match-based generator, I added two playground endpoints that don't require a base resume to be on file.
+
+<EndpointCard method="POST" path="/resumes/ideal" description="Generate a fictional ideal candidate resume for any job description, no base resume required." />
+
+The model invents a realistic person with exactly the background the job is looking for: specific metrics, relevant experience, all the right keywords. This was primarily a debugging tool. When I wanted to verify that the scoring was working correctly, I could generate an ideal candidate resume and confirm it came back with a near-perfect score. But it also turned out to be genuinely useful for understanding what a role is actually looking for before starting to tailor a real application.
+
+<EndpointCard method="POST" path="/resumes/ideal-realistic" description="Preserve the real resume skeleton, AI-generate bullets, skills, and summary targeted to a job." />
+
+This one is the more interesting variant. The model preserves the skeleton of the real resume: name, contact info, companies, job titles, employment dates, schools. Everything else gets rewritten. Bullets, skills, and summary are all AI-generated and targeted to the job. The result is what your resume would look like if you'd always described your experience in terms of exactly this role.
+
+<Callout type="warning" title="This one's a sandbox for a reason">
+The bullets in ideal-realistic mode are plausible but invented. I built it to understand where the gap between someone's actual resume and an ideal candidate really is. Not something to submit directly. That's why it lives in a separate endpoint rather than the main ATS flow.
+</Callout>
+
+Both sandbox endpoints share a daily counter with the targeted resume endpoint, so the limit applies across all three modes.
+
+---
+
+## Targeted Resume: No Match Required
+
+<EndpointCard method="POST" path="/resumes/targeted" description="Paste any job description, get an ATS-optimized version of your actual resume as a PDF download." />
+
+This exists because the matching pipeline only covers Indeed, and job boards aren't the only place jobs come from. LinkedIn DMs, company career pages, referrals. Sometimes a relevant role shows up somewhere the scraper never touches. This gives him a way to use the resume generation feature for any job regardless of how he found it. No match required, no stored result, it streams the file directly.
+
+---
+
+## The PDF Library Switch
+
+Phase 1 used `pdfplumber` to extract text from the uploaded resume before scoring. It worked fine in testing. In production, it started throwing exceptions on certain PDFs with unusual encoding or metadata that `pdfplumber` choked on.
+
+I switched to PyMuPDF (`fitz`). The extraction code is one function: open the PDF stream, iterate pages, join the text. It's been reliable across every resume I've thrown at it since the switch, including files that `pdfplumber` couldn't handle.
+
+---
+
+## The CORS Issues
+
+R2 public URLs don't include CORS headers by default, which means a browser trying to fetch a PDF directly from R2 will get blocked. This wasn't a problem while I was testing against a plain HTML page making server-side requests, but it became a problem the moment I started thinking about a real frontend.
+
+The fix was adding proxy endpoints on the FastAPI side:
+
+<EndpointCard method="GET" path="/users/me/resume" description="Proxy the user's original resume PDF from R2 through the API." />
+<EndpointCard method="GET" path="/matches/{match_id}/ats-resume" description="Proxy a generated ATS resume PDF from R2 through the API." />
+
+The `Content-Disposition` and `Access-Control-Expose-Headers` headers get set on those responses so the browser can actually read the filename and trigger a download correctly.
+
+---
+
+## Billing Foundation
+
+This isn't live yet, but the groundwork is in.
+
+The `User` model now has `is_whitelisted`, `is_paid`, and `paid_at` columns. `is_whitelisted` is a manual toggle for friends and testers that bypasses trial limits permanently. `is_paid` gets flipped by a Clerk webhook when a subscription is created or canceled. `paid_at` gets stamped when `is_paid` is set to true and is used to compute a 30-day subscription window.
+
+There are tiered daily limits on ATS resume generation. Whitelisted users get a higher limit, paid users get a standard limit, and trial users get a more restricted one. The limits reset at midnight Mountain Time using a per-user counter and reset timestamp stored on the `User` row.
+
+Trial gating uses a `trial_expired` computed property on the model. If neither `is_whitelisted` nor `is_paid`, it checks whether the account was created more than `EVER_APPLY_TRIAL_DAYS` days ago. That value comes from an environment variable, so the trial window can be adjusted without a deployment.
+
+<Callout type="tip" title="Clerk Billing">
+The webhook handler verifies signatures via Svix before processing any event. Right now it handles `user.deleted` and is structured to accept Clerk Billing subscription events whenever I'm ready to enable them. No new endpoint needed.
+</Callout>
+
+---
+
+## Scraper Fixes
+
+A few things about the scraper only became obvious once real data started flowing.
+
+**Remote type detection.** The `isRemote` boolean from Indeed is inconsistent. Some jobs mark it correctly, others have the work arrangement in an `attributes` array, and some have nothing at all. The scraper now checks in order: attributes array first, then the `isRemote` boolean, then a keyword scan of the title and description looking for "fully remote," "100% remote," "work from home," and similar phrases. This catches significantly more remote roles than the original single-field check.
+
+**Deduplication.** The first batch of production data included the same job posted under two different URLs: the company's own careers page and an Indeed aggregate. I added a secondary dedup check on `(title, company)` so the same role from the same employer never gets scored twice regardless of how many URLs it shows up under. This runs inside the scraper itself, before anything hits the database.
+
+**Score everything.** The original pipeline had a `min_score` threshold baked in. Jobs below a certain score never got saved as matches. I removed it. Now everything gets scored and stored, and filtering by score is the frontend's job. The data is always there if the client wants to show a "close misses" view or let the user adjust their own cutoff.
+
+**Cleanup.** The scheduler's cleanup job now deletes ATS resume files from R2 when it purges expired jobs. Before this change, generated resumes for expired jobs were accumulating in storage with nothing pointing to them.
+
+---
+
+## Where It Stands
+
+The backend is now doing more than matching. It's generating job-specific resumes, managing a usage quota system, proxying files through the API, and cleaning up after itself. The billing infrastructure is built and waiting for a Clerk plan to connect to.
+
+Next is the frontend. A dashboard where he can scroll through matches, see the score and the reason, open the job posting, generate an ATS resume with one click, and mark things as applied or dismissed. That's Phase 2, and it's what I'm building next.
+
+The backend being genuinely useful ahead of any UI is a good sign. He's already been using the API directly through the test page to generate resumes for applications. That's the clearest validation I could ask for.
